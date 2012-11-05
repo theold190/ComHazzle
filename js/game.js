@@ -1,15 +1,16 @@
 var DEBUG = 0;
 
 var DIFFICULTY_EASY = 5;
-var DIFFICULTY_MEDIUM = 10;
-var DIFFICULTY_HARD = 15;
-var DIFFICULTY_IMPOSSIBLE = 30;
+var DIFFICULTY_MEDIUM = 15;
+var DIFFICULTY_HARD = 30;
+var DIFFICULTY_IMPOSSIBLE = 50;
 
 Crafty.c("Game", {
     init: function() {
         this._difficulty = DIFFICULTY_EASY;
         this.addComponent("KeyboardEvent");
         this._board = Crafty.e("Board");
+
         var cell = this._board._getRandomCell();
         cell._clearCell();
         this._randomize();
