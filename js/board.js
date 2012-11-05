@@ -1,5 +1,5 @@
-var CELL_WIDTH = 140;
-var CELL_HEIGHT = 140;
+var CELL_WIDTH = 142;
+var CELL_HEIGHT = 142;
 
 var BOARD_ROWS = 3;
 var BOARD_COLS = 4;
@@ -27,24 +27,6 @@ function getColorByIndex(index)
     }
 }
 
-function getBgColorByIndex(index)
-{
-    switch(index) {
-        case 0: return "#C9D695";
-        case 1: return "#FAE331";
-        case 2: return "#DF5548";
-        case 3: return "#0183CF";
-        case 4: return "#729A42";
-        case 5: return "#ECA344";
-        case 6: return "#DB5475";
-        case 7: return "#305292";
-        case 8: return "#3F7544";
-        case 9: return "#DE7146";
-        case 10: return "#6E3A6A";
-        case 11: return "#484073";
-    }
-}
-
 var CELL_TYPE_FULL = 0;
 var CELL_TYPE_EMPTY = 1;
 
@@ -61,33 +43,45 @@ Crafty.c("Cell", {
             this.textFont({size: '50px', family: 'Arial'});
         }
     },
+    _updateShape: function(index) {
+        this.css({"border-radius": ""});
+        switch(this._index) {
+            case 0: this.css({"border-top-left-radius": "40px"}); break;
+            case 3: this.css({"border-top-right-radius": "40px"}); break;
+            case 8: this.css({"border-bottom-left-radius": "40px"}); break;
+            case 11: this.css({"border-bottom-right-radius": "40px"}); break;
+        }
+    },
     _makeCell: function(x, y, color, type, index) {
         this.attr({x: x, y: y});
         this.color(color);
         this._index = index;
+
         if (DEBUG) {
             this.text(index);
         }
+
         this._type = type;
+        if (this._type == CELL_TYPE_EMPTY) {
+            this.alpha = 0.5;
+        } else {
+            this.alpha = 1.0;
+        }
+
         return this;
     },
     _clearCell: function() {
         this._makeCell(this.x, this.y, "#FFFFFF", CELL_TYPE_EMPTY, this._index);
     },
     _isInsideCell: function(x, y) {
-        if (this.x <= x && this.x+this.w > x) {
-            if (this.y <= y && this.y+this.h > y) {
-                return true;
-            }
-        }
-        return false;
+        return this.contains(x, y, 1, 1);
     }
 });
 
 Crafty.c("Board", {
     init: function() {
-        this.addComponent("2D, Dom, sprite_background");
-        this._setupBoard(this.x, this.y, BOARD_ROWS, BOARD_COLS, CELL_WIDTH, CELL_HEIGHT);
+        this.addComponent("2D, DOM");
+        this._setupBoard(15, 15, BOARD_ROWS, BOARD_COLS, CELL_WIDTH, CELL_HEIGHT);
     },
     _setupBoard: function(x, y, rows, cols, cw, ch) {
         this._board = [];
@@ -95,6 +89,7 @@ Crafty.c("Board", {
             for (var j=0; j<rows; j++) {
                 var index = getIndex(i,j);
                 var cell = Crafty.e("Cell")._makeCell(x + i*cw, y + j*ch, getColorByIndex(index), CELL_TYPE_FULL, index);
+                cell._updateShape(index);
                 this._board[index] = cell;
             }
         }
