@@ -64,7 +64,7 @@ Crafty.c("Game", {
             }
         }
     },
-    _checkWinConditions(): function {
+    _checkWinConditions: function() {
         var score = this._getScore();
         if (score == this._board._getBoardSize()) {
             alert("You won!");
