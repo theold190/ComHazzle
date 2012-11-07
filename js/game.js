@@ -7,13 +7,42 @@ var DIFFICULTY_IMPOSSIBLE = 50;
 
 Crafty.c("Game", {
     init: function() {
-        this._difficulty = DIFFICULTY_EASY;
-        this.addComponent("KeyboardEvent");
+        this._difficulty = DIFFICULTY_IMPOSSIBLE;
+        this.addComponent("KeyboardEvent, 2D, Mouse");
         this._board = Crafty.e("Board");
+        this.attr({w:this._board._w, h:this._board._h});
 
         var cell = this._board._getRandomCell();
         cell._clearCell();
         this._randomize();
+
+        this.bind('Click', function(e) {
+            var cell = this._board._getCellByCoords(e.realX, e.realY);
+            if (cell._isEmpty()) {
+                return;
+            }
+            var empty = this._board._getEmptyCell();
+            var other = this._board._getCellOnRight(cell);
+            if (other == empty) {
+                this._board._swapCells(cell, empty);
+                return;
+            }
+            other = this._board._getCellOnLeft(cell);
+            if (other == empty) {
+                this._board._swapCells(cell, empty);
+                return;
+            }
+            other = this._board._getCellOnTop(cell);
+            if (other == empty) {
+                this._board._swapCells(cell, empty);
+                return;
+            }
+            other = this._board._getCellOnBottom(cell);
+            if (other == empty) {
+                this._board._swapCells(cell, empty);
+                return;
+            }
+        });
 
         this.bind('KeyDown', function(e) {
             if (this._moveTile(e.key)) {

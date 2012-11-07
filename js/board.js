@@ -75,6 +75,9 @@ Crafty.c("Cell", {
     },
     _isInsideCell: function(x, y) {
         return this.contains(x, y, 1, 1);
+    },
+    _isEmpty: function() {
+        return this._type == CELL_TYPE_EMPTY;
     }
 });
 
@@ -85,6 +88,7 @@ Crafty.c("Board", {
     },
     _setupBoard: function(x, y, rows, cols, cw, ch) {
         this._board = [];
+        this.attr({w:cols*cw, h:rows*ch});
         for (var i=0; i<cols; i++) {
             for (var j=0; j<rows; j++) {
                 var index = getIndex(i,j);
@@ -104,7 +108,7 @@ Crafty.c("Board", {
     _getEmptyCell: function() {
         var length = this._board.length;
         for (var i=0; i<length; i++) {
-            if(this._board[i]._type == CELL_TYPE_EMPTY) {
+            if(this._board[i]._isEmpty()) {
                 return this._board[i];
             }
         }
