@@ -7,7 +7,7 @@ var DIFFICULTY_IMPOSSIBLE = 50;
 
 Crafty.c("Game", {
     init: function() {
-        this._difficulty = DIFFICULTY_IMPOSSIBLE;
+        this._difficulty = DIFFICULTY_EASY;
         this.addComponent("KeyboardEvent, 2D, Mouse");
         this._board = Crafty.e("Board");
         this.attr({w:this._board._w, h:this._board._h});
@@ -22,34 +22,27 @@ Crafty.c("Game", {
                 return;
             }
             var empty = this._board._getEmptyCell();
-            var other = this._board._getCellOnRight(cell);
-            if (other == empty) {
-                this._board._swapCells(cell, empty);
-                return;
+            var counter = 0;
+            var other;
+            while (counter < 4 && empty != other) {
+                switch(counter) {
+                    case 0: other = this._board._getCellOnRight(cell); break;
+                    case 1: other = this._board._getCellOnLeft(cell); break;
+                    case 2: other = this._board._getCellOnTop(cell); break;
+                    case 3: other = this._board._getCellOnBottom(cell); break;
+                }
+                counter++;
             }
-            other = this._board._getCellOnLeft(cell);
             if (other == empty) {
                 this._board._swapCells(cell, empty);
-                return;
-            }
-            other = this._board._getCellOnTop(cell);
-            if (other == empty) {
-                this._board._swapCells(cell, empty);
-                return;
-            }
-            other = this._board._getCellOnBottom(cell);
-            if (other == empty) {
-                this._board._swapCells(cell, empty);
+                this._checkWinConditions();
                 return;
             }
         });
 
         this.bind('KeyDown', function(e) {
             if (this._moveTile(e.key)) {
-                var score = this._getScore();
-                if (score == this._board._getBoardSize()) {
-                    alert("You won!");
-                }
+                this._checkWinConditions();
             }
         });
     },
@@ -69,6 +62,12 @@ Crafty.c("Game", {
                 this._board._swapCells(cell, other);
                 count++;
             }
+        }
+    },
+    _checkWinConditions(): function {
+        var score = this._getScore();
+        if (score == this._board._getBoardSize()) {
+            alert("You won!");
         }
     },
     _getScore: function() {
